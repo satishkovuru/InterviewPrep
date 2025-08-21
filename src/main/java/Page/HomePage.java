@@ -1,12 +1,17 @@
 package Page;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.ConfigReader;
+
+import java.time.Duration;
 
 /**
  * Page Object Model for the application's home page.
@@ -54,11 +59,14 @@ public class HomePage {
      */
     public void search(String query) {
         try {
-            searchBox.sendKeys(query);
+            final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            final WebElement box = wait.until(ExpectedConditions.elementToBeClickable(By.name("q")));
+            box.clear();
+            box.sendKeys(query);
             logger.info("Entered search query: {}", query);
         } catch (Exception e) {
             logger.error("Failed to enter search query", e);
-            throw e;
+            throw new RuntimeException("Search box not interactable", e);
         }
     }
 

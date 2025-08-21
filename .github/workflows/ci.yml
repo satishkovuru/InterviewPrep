@@ -9,17 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      selenium-hub:
-        image: selenium/hub:4.21.0-20240611
-        ports:
-          - 4444:4444
-      chrome:
-        image: selenium/node-chrome:4.21.0-20240611
-        env:
-          SE_EVENT_BUS_HOST: selenium-hub
-          SE_EVENT_BUS_PUBLISH_PORT: 4442
-          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,16 +17,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Wait for Selenium Grid
-        run: |
-          for i in {1..30}; do
-            if curl -s http://localhost:4444/wd/hub/status | grep -q '"ready":true'; then
-              echo "Selenium Grid is ready!"
-              break
-            fi
-            echo "Waiting for Selenium Grid..."
-            sleep 2
-          done
       - name: Build and test with Maven (TestNG suite)
         run: mvn clean test allure:report
       - name: Generate Allure Report
