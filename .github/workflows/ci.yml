@@ -17,27 +17,14 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Install Allure CLI
-        run: |
-          sudo apt-get update && sudo apt-get install -y default-jre
-          curl -o allure-2.27.0.tgz -L https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
-          tar -xzf allure-2.27.0.tgz
-          sudo mv allure-2.27.0/bin/allure /usr/local/bin/
-          allure --version
       - name: Build and test with Maven (TestNG suite)
         run: mvn clean test allure:report
-      - name: Upload Allure Results (project root fallback)
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.8
         with:
-          name: allure-results-root
-          path: allure-results/
-      - name: Upload Allure Results (target)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results
-          path: target/allure-results/
+          allure_results: target/allure-results
+          allure_report: target/site/allure-maven-plugin
+          allure_history: allure-history
       - name: Upload Allure HTML Report
         if: always()
         uses: actions/upload-artifact@v4
