@@ -82,6 +82,35 @@ src/test/resources/   # Test resources (config, testng suites)
 }
 ```
 
+## BrowserStack Integration
+
+This project supports running tests on BrowserStack for cross-browser cloud testing.
+
+### Prerequisites
+- [BrowserStack account](https://www.browserstack.com/users/sign_up)
+- Your BrowserStack Username and Access Key
+
+### Setup Steps
+1. **Set BrowserStack credentials as environment variables:**
+   ```sh
+   export BROWSERSTACK_USERNAME=your_browserstack_username
+   export BROWSERSTACK_ACCESS_KEY=your_browserstack_access_key
+   ```
+   Or add them as secrets in your CI/CD pipeline.
+
+2. **Configure browserstack.yml (optional):**
+   - Edit `browserstack.yml` to specify browsers, OS, and other settings.
+
+3. **Run tests on BrowserStack:**
+   ```sh
+   mvn test
+   ```
+   The framework will automatically use BrowserStack if credentials are set.
+
+### Notes
+- The framework uses Selenium RemoteWebDriver to connect to BrowserStack.
+- You can view your test runs and logs on the [BrowserStack Automate dashboard](https://automate.browserstack.com/).
+
 ## License
 
 This project is for educational purposes.
