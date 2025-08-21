@@ -26,6 +26,22 @@ public class WepAppTest {
     private HomePage homePage;
 
     /**
+     * Helper to check if Selenium Grid is available.
+     */
+    private boolean isGridAvailable(String gridUrl) {
+        try {
+            URL url = new URL(gridUrl);
+            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(2000);
+            conn.connect();
+            int code = conn.getResponseCode();
+            return code < 500; // Grid returns 200 or 4xx if up
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
      * Sets up the WebDriver instance based on the specified browser.
      *
      * @param browser The name of the browser to use (e.g., "chrome", "firefox", "edge", "safari").
@@ -35,28 +51,46 @@ public class WepAppTest {
     @BeforeMethod(alwaysRun = true)
     public void setUp(@Optional("chrome") String browser) throws MalformedURLException {
         WebDriver driver;
+        String gridUrl = System.getenv().getOrDefault("SELENIUM_GRID_URL", "http://localhost:4444/wd/hub");
+        boolean useGrid = isGridAvailable(gridUrl);
         try {
             if (browser.equalsIgnoreCase("chrome")) {
                 WebDriverManager.chromedriver().setup();
-                driver = new RemoteWebDriver(new URL("http://localhost:4444"), new ChromeOptions());
+                if (useGrid) {
+                    driver = new RemoteWebDriver(new URL(gridUrl), new ChromeOptions());
+                } else {
+                    driver = WebDriverManager.chromedriver().create();
+                }
             } else if (browser.equalsIgnoreCase("firefox")) {
                 WebDriverManager.firefoxdriver().setup();
-                driver = new RemoteWebDriver(new URL("http://localhost:4444"), new FirefoxOptions());
+                if (useGrid) {
+                    driver = new RemoteWebDriver(new URL(gridUrl), new FirefoxOptions());
+                } else {
+                    driver = WebDriverManager.firefoxdriver().create();
+                }
             } else if (browser.equalsIgnoreCase("edge")) {
                 WebDriverManager.edgedriver().setup();
                 EdgeOptions options = new EdgeOptions();
                 String userDataDir = System.getProperty("java.io.tmpdir") + "/edge_profile_" + System.currentTimeMillis();
                 options.addArguments("--user-data-dir=" + userDataDir);
-                driver = new RemoteWebDriver(new URL("http://localhost:4444"), options);
+                if (useGrid) {
+                    driver = new RemoteWebDriver(new URL(gridUrl), options);
+                } else {
+                    driver = WebDriverManager.edgedriver().create();
+                }
             } else if (browser.equalsIgnoreCase("safari")) {
-                driver = new RemoteWebDriver(new URL("http://localhost:4444"), new SafariOptions());
+                if (useGrid) {
+                    driver = new RemoteWebDriver(new URL(gridUrl), new SafariOptions());
+                } else {
+                    driver = new org.openqa.selenium.safari.SafariDriver();
+                }
             } else {
                 throw new IllegalArgumentException("Browser not supported: " + browser);
             }
             homePage = new HomePage(driver);
-            logger.info("WebDriver initialized for browser: {}", browser);
+            logger.info("WebDriver initialized for browser: {} (grid: {})", browser, useGrid);
         } catch (Exception e) {
-            logger.error("Failed to initialize WebDriver for browser: {}", browser, e);
+            logger.error("Failed to initialize WebDriver for browser: {} (grid: {})", browser, useGrid, e);
             throw e;
         }
     }
