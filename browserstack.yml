@@ -1,5 +1,5 @@
-userName: ${{ secrets.BROWSERSTACK_USERNAME }}
-accessKey: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+userName: ${BROWSERSTACK_USERNAME}
+accessKey: ${BROWSERSTACK_ACCESS_KEY}
 framework: testng
 platforms:
   - os: Windows
