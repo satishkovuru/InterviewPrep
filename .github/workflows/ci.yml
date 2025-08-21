@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Install Allure CLI
+        run: |
+          sudo apt-get update && sudo apt-get install -y default-jre
+          curl -o allure-2.27.0.tgz -L https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+          tar -xzf allure-2.27.0.tgz
+          sudo mv allure-2.27.0/bin/allure /usr/local/bin/
+          allure --version
+      - name: Build and test with Maven (TestNG suite)
+        run: mvn clean test allure:report
+      - name: Upload Allure Results (project root fallback)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-root
+          path: allure-results/
+      - name: Upload Allure Results (target)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: target/allure-results/
+      - name: Upload Allure HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin/
+      - name: Upload TestNG Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/
