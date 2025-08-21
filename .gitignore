@@ -43,3 +43,60 @@ target/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Allure results (project root and target)
+allure-results/
+target/allure-results/
+
+# Allure HTML reports
+allure-report/
+target/allure-report/
+target/site/allure-maven-plugin/
+
+# TestNG and Surefire reports
+surefire-reports/
+target/surefire-reports/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Maven
+.mvn/
+target/
+
+# Node/npm (if ever used)
+node_modules/
+
+# Python (if ever used)
+__pycache__/
+*.pyc
+
+# Misc
+*.swp
+*.swo
+
+# Backup files
+*~
+*.bak
+
+# Build output
+build/
+
+# Coverage
+coverage/
+
+# Java crash logs
+hs_err_pid*
+replay_pid*
